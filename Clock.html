@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Dash - Utility Suite</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #2e1065 100%);
+            --crystal-bg: rgba(255, 255, 255, 0.03);
+            --crystal-border: rgba(255, 255, 255, 0.08);
+            --crystal-highlight: rgba(255, 255, 255, 0.2);
+            --liquid-glow: rgba(99, 102, 241, 0.15);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-color: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --nav-bg: rgba(15, 23, 42, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-gradient);
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Ambient background decorations */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+        }
+
+        body::before {
+            width: 400px;
+            height: 400px;
+            background: rgba(99, 102, 241, 0.23);
+            top: 10%;
+            left: 15%;
+            animation: float 12s infinite alternate ease-in-out;
+        }
+
+        body::after {
+            width: 350px;
+            height: 350px;
+            background: rgba(236, 72, 153, 0.18);
+            bottom: 10%;
+            right: 15%;
+            animation: float 8s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(30px) scale(1.08); }
+        }
+
+        /* Main Glassmorphic Container Layout */
+        .chronos-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background: var(--crystal-bg);
+            backdrop-filter: blur(35px) saturate(200%);
+            -webkit-backdrop-filter: blur(35px) saturate(200%);
+            border: 1px solid var(--crystal-border);
+            border-radius: 30px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 var(--crystal-highlight);
+            text-align: center;
+        }
+
+        .chronos-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+
+        /* Typography Branding header */
+        .brand {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .brand span {
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Tab Navigation Control Elements */
+        .tabs {
+            display: flex;
+            background: var(--nav-bg);
+            padding: 4px;
+            border-radius: 14px;
+            border: 1px solid var(--crystal-border);
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--accent-color);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+            text-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* Module Views Base Structure */
+        .module {
+            display: none;
+            min-height: 240px;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .module.active {
+            display: flex;
+        }
+
+        /* Inputs and Dropdown Form Overrides */
+        select, input[type="number"] {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--crystal-border);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 12px;
+            outline: none;
+            font-size: 1rem;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: var(--accent-color);
+        }
+
+        select option {
+            background: #1e1b4b;
+            color: var(--text-primary);
+        }
+
+        /* Typography Metrics Displays */
+        .time-display {
+            font-size: 3.2rem;
+            font-weight: 200;
+            color: var(--text-primary);
+            text-shadow: 0 0 20px rgba(248, 250, 252, 0.15);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .date-display {
+            font-size: 0.95rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Grid Controls Layout row */
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--crystal-border);
+            color: var(--text-primary);
+            padding: 12px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .action-btn.primary {
+            border-color: rgba(56, 189, 248, 0.3);
+            color: var(--accent-color);
+        }
+
+        /* Compass Visual Component UI */
+        .compass-ring {
+            width: 180px;
+            height: 180px;
+            border: 2px solid var(--crystal-border);
+            border-radius: 50%;
+            position: relative;
+            background: rgba(0,0,0,0.15);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.3, 1);
+        }
+
+        .compass-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 140px;
+            background: linear-gradient(to bottom, #f87171 50%, #64748b 50%);
+            transform: translate(-50%, -50%);
+            border-radius: 2px;
+        }
+
+        .compass-needle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .direction-label {
+            position: absolute;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--text-secondary);
+        }
+        .dir-n { top: 6px; left: 50%; transform: translateX(-50%); color: #f87171; }
+        .dir-s { bottom: 6px; left: 50%; transform: translateX(-50%); }
+        .dir-e { right: 8px; top: 50%; transform: translateY(-50%); }
+        .dir-w { left: 8px; top: 50%; transform: translateY(-50%); }
+
+        .compass-reading {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        /* Flex Wrapper Input Columns */
+        .timer-inputs {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .timer-field {
+            flex: 1;
+            text-align: center;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chronos-container">
+        <div class="brand">Crystal<span>Dash</span></div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchModule('clock')">Clock</button>
+            <button class="tab-btn" onclick="switchModule('stopwatch')">Stopwatch</button>
+            <button class="tab-btn" onclick="switchModule('timer')">Timer</button>
+            <button class="tab-btn" onclick="switchModule('compass')">Compass</button>
+        </div>
+
+        <div id="module-clock" class="module active">
+            <select id="timezone-selector" onchange="updateClock()">
+                <option value="local">Local Time</option>
+                <option value="America/New_York">New York (EST/EDT)</option>
+                <option value="Europe/London">London (GMT/BST)</option>
+                <option value="Europe/Rome">Rome (CET/CEST)</option>
+                <option value="Asia/Tokyo">Tokyo (JST)</option>
+                <option value="Australia/Sydney">Sydney (AEST/AEDT)</option>
+                <option value="Asia/Dubai">Dubai (GST)</option>
+            </select>
+            <div class="time-display" id="clock-time">00:00:00</div>
+            <div class="date-display" id="clock-date">Loading Time Data...</div>
+        </div>
+
+        <div id="module-stopwatch" class="module">
+            <div class="time-display" id="stopwatch-display">00:00.00</div>
+            <div class="controls-row">
+                <button class="action-btn primary" id="sw-start-btn" onclick="toggleStopwatch()">Start</button>
+                <button class="action-btn" onclick="resetStopwatch()">Reset</button>
+            </div>
+        </div>
+
+        <div id="module-timer" class="module">
+            <div class="timer-inputs" id="t-inputs-wrapper">
+                <input type="number" id="t-min" class="timer-field" placeholder="Min" min="0" max="59" value="5">
+                <input type="number" id="t-sec" class="timer-field" placeholder="Sec" min="0" max="59" value="0">
+            </div>
+            <div class="time-display" id="timer-display" style="display: none;">05:00</div>
+            <div class="controls-row">
+                <button class="action-btn primary" id="tm-start-btn" onclick="toggleTimer()">Start</button>
+                <button class="action-btn" id="tm-reset-btn" onclick="resetTimer()">Set</button>
+            </div>
+        </div>
+
+        <div id="module-compass" class="module">
+            <div class="compass-ring" id="compass-hardware">
+                <div class="direction-label dir-n">N</div>
+                <div class="direction-label dir-e">E</div>
+                <div class="direction-label dir-s">S</div>
+                <div class="direction-label dir-w">W</div>
+                <div class="compass-needle"></div>
+            </div>
+            <div class="compass-reading" id="compass-degrees">0° N</div>
+        </div>
+    </div>
+
+    <script>
+        // Module Switching Core Logic
+        function switchModule(modId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`module-${modId}`).classList.add('active');
+        }
+
+        // --- WORLD CLOCK MODULE LOGIC ---
+        function updateClock() {
+            const tz = document.getElementById('timezone-selector').value;
+            const now = new Date();
+            
+            let optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            let optionsDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            
+            if (tz !== 'local') {
+                optionsTime.timeZone = tz;
+                optionsDate.timeZone = tz;
+            }
+
+            document.getElementById('clock-time').innerText = now.toLocaleTimeString('en-US', optionsTime);
+            document.getElementById('clock-date').innerText = now.toLocaleDateString('en-US', optionsDate);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+
+        // --- STOPWATCH MODULE LOGIC ---
+        let swInterval = null;
+        let swStartTime = 0;
+        let swElapsedTime = 0;
+        let swRunning = false;
+
+        function toggleStopwatch() {
+            const btn = document.getElementById('sw-start-btn');
+            if (!swRunning) {
+                swStartTime = Date.now() - swElapsedTime;
+                swInterval = setInterval(runStopwatch, 10);
+                btn.innerText = 'Pause';
+                swRunning = true;
+            } else {
+                swInterval = clearInterval(swInterval);
+                btn.innerText = 'Start';
+                swRunning = false;
+            }
+        }
+
+        function runStopwatch() {
+            swElapsedTime = Date.now() - swStartTime;
+            let totalSecs = Math.floor(swElapsedTime / 1000);
+            let mins = Math.floor(totalSecs / 60);
+            let secs = totalSecs % 60;
+            let ms = Math.floor((swElapsedTime % 1000) / 10);
+
+            document.getElementById('stopwatch-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+        }
+
+        function resetStopwatch() {
+            clearInterval(swInterval);
+            swElapsedTime = 0;
+            swRunning = false;
+            document.getElementById('sw-start-btn').innerText = 'Start';
+            document.getElementById('stopwatch-display').innerText = '00:00.00';
+        }
+
+
+        // --- TIMER MODULE LOGIC ---
+        let tmInterval = null;
+        let tmTimeLeft = 0;
+        let tmRunning = false;
+
+        function toggleTimer() {
+            const btn = document.getElementById('tm-start-btn');
+            const display = document.getElementById('timer-display');
+            const inputsWrapper = document.getElementById('t-inputs-wrapper');
+
+            if (!tmRunning) {
+                if (tmTimeLeft <= 0) {
+                    const m = parseInt(document.getElementById('t-min').value) || 0;
+                    const s = parseInt(document.getElementById('t-sec').value) || 0;
+                    tmTimeLeft = (m * 60) + s;
+                }
+                
+                if (tmTimeLeft <= 0) return;
+
+                inputsWrapper.style.display = 'none';
+                display.style.display = 'block';
+                updateTimerDisplay();
+
+                tmInterval = setInterval(() => {
+                    tmTimeLeft--;
+                    updateTimerDisplay();
+                    if (tmTimeLeft <= 0) {
+                        clearInterval(tmInterval);
+                        alert("Time's up!");
+                        resetTimer();
+                    }
+                }, 1000);
+
+                btn.innerText = 'Pause';
+                tmRunning = true;
+            } else {
+                clearInterval(tmInterval);
+                btn.innerText = 'Start';
+                tmRunning = false;
+            }
+        }
+
+        function updateTimerDisplay() {
+            let m = Math.floor(tmTimeLeft / 60);
+            let s = tmTimeLeft % 60;
+            document.getElementById('timer-display').innerText = 
+                `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function resetTimer() {
+            clearInterval(tmInterval);
+            tmTimeLeft = 0;
+            tmRunning = false;
+            document.getElementById('tm-start-btn').innerText = 'Start';
+            document.getElementById('t-inputs-wrapper').style.display = 'flex';
+            document.getElementById('timer-display').style.display = 'none';
+        }
+
+
+        // --- COMPASS NAV MODULE LOGIC ---
+        let heading = 0;
+        
+        // Simulates realistic navigation bearing movements for display testing
+        function simulateCompass() {
+            heading += (Math.random() - 0.5) * 5; 
+            if (heading < 0) heading += 360;
+            heading = heading % 360;
+
+            const ring = document.getElementById('compass-hardware');
+            const reading = document.getElementById('compass-degrees');
+            
+            // Apply standard CSS rotation transformations
+            ring.style.transform = `rotate(${-heading}deg)`;
+            
+            // Map degrees into standard heading directions
+            let direction = "N";
+            if (heading >= 22.5 && heading < 67.5) direction = "NE";
+            else if (heading >= 67.5 && heading < 112.5) direction = "E";
+            else if (heading >= 112.5 && heading < 157.5) direction = "SE";
+            else if (heading >= 157.5 && heading < 202.5) direction = "S";
+            else if (heading >= 202.5 && heading < 247.5) direction = "SW";
+            else if (heading >= 247.5 && heading < 292.5) direction = "W";
+            else if (heading >= 292.5 && heading < 337.5) direction = "NW";
+
+            reading.innerText = `${Math.floor(heading)}° ${direction}`;
+        }
+        
+        // Attach compass task updates to periodic runtime cycles
+        setInterval(simulateCompass, 200);
+    </script>
+</body>
+</html>
