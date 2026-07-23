@@ -25,4 +25,4 @@ The project is open to the community! If you have ideas for adding new features 
 
 License
 
-This project is licensed under the MIT License. You are free to use, modify and distribute it.
+This project is licensed under the MIT License. 
